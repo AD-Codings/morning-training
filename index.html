@@ -3,8 +3,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Morning Training System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Morning Training</title>
+
+<!-- PWA / iOS Home Screen -->
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Training">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- iOS icon (inline SVG as data URI — no external file needed) -->
+
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230a0a0a'/%3E%3Ctext x='90' y='125' font-size='100' text-anchor='middle' font-family='system-ui'%3E%E2%9A%94%EF%B8%8F%3C/text%3E%3C/svg%3E">
+
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -46,7 +59,11 @@ opacity: 0.4;
 .container {
 max-width: 900px;
 margin: 0 auto;
-padding: 40px 20px 80px;
+padding: 60px 20px 100px;
+padding-top: max(60px, env(safe-area-inset-top) + 20px);
+padding-bottom: max(100px, env(safe-area-inset-bottom) + 60px);
+padding-left: max(20px, env(safe-area-inset-left));
+padding-right: max(20px, env(safe-area-inset-right));
 position: relative;
 z-index: 1;
 }
