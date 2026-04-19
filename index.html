@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morning Training System</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --dark: #111113;
+    --card: #17171a;
+    --border: #2a2a30;
+    --text: #e8e8ec;
+    --muted: #7a7a8a;
+    --accent: #ff4c29;
+    --gold: #f5b800;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --white: #ffffff;
+  }
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+background: var(–black);
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* NOISE TEXTURE */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 256 256’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘noise’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23noise)’ opacity=‘0.04’/%3E%3C/svg%3E”);
+pointer-events: none;
+z-index: 0;
+opacity: 0.4;
+}
+
+.container {
+max-width: 900px;
+margin: 0 auto;
+padding: 40px 20px 80px;
+position: relative;
+z-index: 1;
+}
+
+/* HEADER */
+.header {
+text-align: center;
+margin-bottom: 60px;
+animation: fadeDown 0.6s ease;
+}
+
+.header .eyebrow {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+letter-spacing: 4px;
+color: var(–accent);
+text-transform: uppercase;
+margin-bottom: 12px;
+}
+
+.header h1 {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: clamp(52px, 10vw, 96px);
+line-height: 0.9;
+letter-spacing: 2px;
+color: var(–white);
+}
+
+.header h1 span {
+color: var(–accent);
+}
+
+.header .sub {
+font-size: 14px;
+color: var(–muted);
+margin-top: 16px;
+font-weight: 300;
+letter-spacing: 0.5px;
+}
+
+/* SECTION TITLE */
+.section-title {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 13px;
+letter-spacing: 5px;
+color: var(–muted);
+text-transform: uppercase;
+margin-bottom: 20px;
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.section-title::after {
+content: ‘’;
+flex: 1;
+height: 1px;
+background: var(–border);
+}
+
+/* CARD */
+.card {
+background: var(–card);
+border: 1px solid var(–border);
+border-radius: 12px;
+padding: 24px;
+margin-bottom: 16px;
+transition: border-color 0.2s;
+}
+
+.card:hover {
+border-color: #3a3a45;
+}
+
+/* PRE-WORKOUT */
+.pre-card {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 16px;
+margin-bottom: 40px;
+}
+
+.pre-item {
+background: var(–card);
+border: 1px solid var(–border);
+border-radius: 10px;
+padding: 20px;
+display: flex;
+align-items: center;
+gap: 14px;
+}
+
+.pre-item .icon {
+font-size: 28px;
+}
+
+.pre-item .label {
+font-size: 13px;
+font-weight: 500;
+}
+
+.pre-item .desc {
+font-size: 11px;
+color: var(–muted);
+margin-top: 2px;
+}
+
+/* WARMUP */
+.warmup-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+gap: 12px;
+margin-bottom: 40px;
+}
+
+.exercise-pill {
+background: var(–card);
+border: 1px solid var(–border);
+border-radius: 10px;
+padding: 16px 18px;
+display: flex;
+align-items: center;
+gap: 14px;
+transition: all 0.2s;
+cursor: pointer;
+}
+
+.exercise-pill:hover {
+border-color: var(–accent);
+transform: translateY(-2px);
+}
+
+.exercise-pill .ex-img {
+width: 52px;
+height: 52px;
+border-radius: 8px;
+object-fit: cover;
+flex-shrink: 0;
+background: #222;
+}
+
+.exercise-pill .ex-name {
+font-size: 13px;
+font-weight: 500;
+}
+
+.exercise-pill .ex-detail {
+font-size: 11px;
+color: var(–muted);
+margin-top: 3px;
+font-family: ‘DM Mono’, monospace;
+}
+
+/* WEEKLY SPLIT TABS */
+.day-tabs {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+margin-bottom: 24px;
+}
+
+.day-tab {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+letter-spacing: 1px;
+padding: 8px 16px;
+border-radius: 6px;
+border: 1px solid var(–border);
+background: transparent;
+color: var(–muted);
+cursor: pointer;
+transition: all 0.2s;
+text-transform: uppercase;
+}
+
+.day-tab:hover { color: var(–text); border-color: #444; }
+
+.day-tab.active {
+color: var(–white);
+border-color: transparent;
+background: var(–accent);
+}
+
+.day-tab[data-color=“green”].active { background: var(–green); }
+.day-tab[data-color=“red”].active { background: #ef4444; }
+.day-tab[data-color=“yellow”].active { background: var(–gold); color: #000; }
+.day-tab[data-color=“white”].active { background: #555; }
+.day-tab[data-color=“blue”].active { background: var(–blue); }
+.day-tab[data-color=“purple”].active { background: var(–purple); }
+.day-tab[data-color=“gray”].active { background: #333; }
+
+.day-panel { display: none; }
+.day-panel.active { display: block; }
+
+/* DAY HEADER */
+.day-header {
+display: flex;
+align-items: center;
+gap: 16px;
+margin-bottom: 24px;
+}
+
+.day-badge {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 42px;
+line-height: 1;
+color: var(–white);
+}
+
+.day-info .day-name {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 22px;
+letter-spacing: 2px;
+}
+
+.day-info .day-focus {
+font-size: 12px;
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
+margin-top: 2px;
+}
+
+/* EXERCISE ROWS */
+.exercise-row {
+display: flex;
+align-items: center;
+gap: 16px;
+padding: 14px 0;
+border-bottom: 1px solid var(–border);
+transition: background 0.15s;
+}
+
+.exercise-row:last-of-type { border-bottom: none; }
+
+.exercise-row .row-img {
+width: 60px;
+height: 60px;
+border-radius: 8px;
+object-fit: cover;
+flex-shrink: 0;
+background: #1e1e22;
+border: 1px solid var(–border);
+}
+
+.exercise-row .row-info { flex: 1; }
+.exercise-row .row-name { font-size: 14px; font-weight: 500; }
+.exercise-row .row-sets {
+font-size: 12px;
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
+margin-top: 3px;
+}
+
+.check-box {
+width: 26px;
+height: 26px;
+border-radius: 6px;
+border: 2px solid var(–border);
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-shrink: 0;
+transition: all 0.2s;
+font-size: 14px;
+}
+
+.check-box:hover { border-color: var(–green); }
+.check-box.checked { background: var(–green); border-color: var(–green); }
+
+/* FINISHER */
+.finisher-box {
+margin-top: 16px;
+border: 1px solid #2a1f1f;
+background: #1a1214;
+border-radius: 10px;
+padding: 16px 20px;
+}
+
+.finisher-label {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+letter-spacing: 3px;
+color: var(–accent);
+text-transform: uppercase;
+margin-bottom: 8px;
+}
+
+.finisher-text {
+font-size: 13px;
+line-height: 1.7;
+color: #ccc;
+}
+
+/* STRETCH */
+.stretch-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+gap: 12px;
+}
+
+.stretch-item {
+background: var(–card);
+border: 1px solid var(–border);
+border-radius: 10px;
+padding: 16px;
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.stretch-item .s-img {
+width: 48px;
+height: 48px;
+border-radius: 8px;
+background: #1a1a20;
+object-fit: cover;
+flex-shrink: 0;
+}
+
+.stretch-item .s-name { font-size: 13px; font-weight: 500; }
+.stretch-item .s-time {
+font-size: 11px;
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
+margin-top: 2px;
+}
+
+/* RULES + NUTRITION */
+.two-col {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 16px;
+margin-bottom: 40px;
+}
+
+@media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+.rule-item {
+display: flex;
+gap: 12px;
+padding: 12px 0;
+border-bottom: 1px solid var(–border);
+font-size: 13px;
+line-height: 1.5;
+color: #ccc;
+}
+
+.rule-item:last-child { border-bottom: none; }
+.rule-dot { color: var(–accent); font-weight: bold; margin-top: 2px; }
+
+/* TIMELINE */
+.timeline {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+gap: 12px;
+margin-bottom: 40px;
+}
+
+.timeline-item {
+background: var(–card);
+border: 1px solid var(–border);
+border-radius: 10px;
+padding: 18px;
+}
+
+.timeline-item .t-week {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+color: var(–accent);
+letter-spacing: 2px;
+margin-bottom: 8px;
+text-transform: uppercase;
+}
+
+.timeline-item .t-result {
+font-size: 13px;
+font-weight: 500;
+line-height: 1.4;
+}
+
+/* CALENDAR */
+.cal-top {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 20px;
+flex-wrap: wrap;
+gap: 12px;
+}
+
+.cal-nav {
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.cal-nav button {
+background: var(–card);
+border: 1px solid var(–border);
+color: var(–text);
+width: 32px;
+height: 32px;
+border-radius: 6px;
+font-size: 16px;
+cursor: pointer;
+transition: border-color 0.2s;
+display: flex; align-items: center; justify-content: center;
+}
+
+.cal-nav button:hover { border-color: var(–accent); }
+
+.cal-month {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 22px;
+letter-spacing: 2px;
+color: var(–white);
+min-width: 160px;
+text-align: center;
+}
+
+.streak-badges {
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+}
+
+.streak-badge {
+background: var(–card);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 8px 14px;
+text-align: center;
+}
+
+.streak-badge .s-num {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 26px;
+line-height: 1;
+}
+
+.streak-badge .s-label {
+font-family: ‘DM Mono’, monospace;
+font-size: 9px;
+letter-spacing: 2px;
+color: var(–muted);
+text-transform: uppercase;
+margin-top: 2px;
+}
+
+.streak-badge.fire .s-num { color: var(–accent); }
+.streak-badge.total .s-num { color: var(–green); }
+.streak-badge.best .s-num { color: var(–gold); }
+
+.cal-weekdays {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 4px;
+margin-bottom: 6px;
+}
+
+.cal-weekday {
+text-align: center;
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+letter-spacing: 1px;
+color: var(–muted);
+padding: 4px 0;
+text-transform: uppercase;
+}
+
+.cal-grid {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 4px;
+}
+
+.cal-day {
+aspect-ratio: 1;
+border-radius: 8px;
+border: 1px solid var(–border);
+background: var(–card);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+font-size: 13px;
+font-weight: 500;
+cursor: pointer;
+transition: all 0.15s;
+position: relative;
+gap: 2px;
+padding: 2px;
+}
+
+.cal-day:hover:not(.cal-empty):not(.cal-future) {
+border-color: var(–accent);
+transform: scale(1.05);
+}
+
+.cal-day.cal-empty {
+background: transparent;
+border-color: transparent;
+cursor: default;
+}
+
+.cal-day.cal-future {
+opacity: 0.3;
+cursor: default;
+}
+
+.cal-day.cal-today {
+border-color: var(–accent);
+color: var(–accent);
+}
+
+.cal-day.done {
+background: #0d2818;
+border-color: var(–green);
+color: var(–green);
+}
+
+.cal-day.missed {
+background: #1e0f0f;
+border-color: #5a2020;
+color: #7a3a3a;
+}
+
+.cal-day .day-num { font-size: 12px; line-height: 1; }
+.cal-day .day-icon { font-size: 11px; line-height: 1; }
+
+.cal-legend {
+display: flex;
+gap: 16px;
+margin-top: 14px;
+flex-wrap: wrap;
+}
+
+.legend-item {
+display: flex;
+align-items: center;
+gap: 7px;
+font-size: 12px;
+color: var(–muted);
+}
+
+.legend-dot {
+width: 12px;
+height: 12px;
+border-radius: 3px;
+}
+
+.legend-dot.done { background: var(–green); }
+.legend-dot.missed { background: #5a2020; }
+.legend-dot.today { border: 2px solid var(–accent); background: transparent; }
+
+.log-btn {
+margin-top: 20px;
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+}
+
+.log-btn button {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+padding: 10px 20px;
+border-radius: 8px;
+border: 1px solid var(–border);
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.btn-done {
+background: #0d2818;
+color: var(–green);
+border-color: var(–green) !important;
+}
+
+.btn-done:hover { background: #143822; }
+
+.btn-missed {
+background: #1e0f0f;
+color: #f87171;
+border-color: #5a2020 !important;
+}
+
+.btn-missed:hover { background: #2a1414; }
+
+.btn-clear {
+background: transparent;
+color: var(–muted);
+}
+
+.btn-clear:hover { color: var(–text); border-color: #444 !important; }
+
+/* CTA */
+.cta {
+background: var(–accent);
+border-radius: 12px;
+padding: 32px;
+text-align: center;
+margin-top: 40px;
+}
+
+.cta h2 {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 36px;
+letter-spacing: 2px;
+color: var(–white);
+margin-bottom: 8px;
+}
+
+.cta p { font-size: 14px; color: rgba(255,255,255,0.8); }
+
+/* ANIMATIONS */
+@keyframes fadeDown {
+from { opacity: 0; transform: translateY(-20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+/* SVG EXERCISE IMAGES via inline canvas-style */
+.ex-svg {
+width: 100%;
+height: 100%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 26px;
+border-radius: 8px;
+}
+
+.section-block { margin-bottom: 48px; }
+</style>
+
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+
+  <div class="header">
+    <div class="eyebrow">⚔ Lock-In Mode Activated</div>
+    <h1>MORNING<br><span>TRAINING</span><br>SYSTEM</h1>
+    <p class="sub">Fasted · Disciplined · Every. Single. Day.</p>
+  </div>
+
+  <!-- PRE WORKOUT -->
+
+  <div class="section-block">
+    <div class="section-title">🌅 Before Workout</div>
+    <div class="pre-card">
+      <div class="pre-item">
+        <div class="icon">💧</div>
+        <div>
+          <div class="label">1 Glass Water</div>
+          <div class="desc">Mandatory — right after waking</div>
+        </div>
+      </div>
+      <div class="pre-item">
+        <div class="icon">☕</div>
+        <div>
+          <div class="label">Black Coffee</div>
+          <div class="desc">Optional — boosts performance</div>
+        </div>
+      </div>
+      <div class="pre-item">
+        <div class="icon">🚫</div>
+        <div>
+          <div class="label">No Heavy Food</div>
+          <div class="desc">Light or fasted stomach only</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WARMUP -->
+
+  <div class="section-block">
+    <div class="section-title">🔥 Warm-Up — 10 min daily</div>
+    <div class="warmup-grid">
+
+```
+  <div class="exercise-pill">
+    <svg class="ex-img" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="52" height="52" rx="8" fill="#1e1e28"/>
+      <circle cx="26" cy="12" r="4" fill="#ff4c29"/>
+      <line x1="26" y1="16" x2="26" y2="30" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="14" y1="20" x2="38" y2="24" stroke="#ff4c29" stroke-width="2" stroke-linecap="round"/>
+      <line x1="22" y1="30" x2="16" y2="44" stroke="#ff4c29" stroke-width="2" stroke-linecap="round"/>
+      <line x1="30" y1="30" x2="36" y2="44" stroke="#ff4c29" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="ex-name">Jumping Jacks</div>
+      <div class="ex-detail">1 min</div>
+    </div>
+  </div>
+
+  <div class="exercise-pill">
+    <svg class="ex-img" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="52" height="52" rx="8" fill="#1e1e28"/>
+      <circle cx="26" cy="10" r="4" fill="#ff4c29"/>
+      <line x1="26" y1="14" x2="26" y2="28" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="14" y1="20" x2="26" y2="22" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="26" y1="28" x2="20" y2="42" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="26" y1="28" x2="32" y2="36" stroke="#ff4c29" stroke-width="2"/>
+      <circle cx="20" cy="43" r="3" fill="#333" stroke="#ff4c29" stroke-width="1.5"/>
+    </svg>
+    <div>
+      <div class="ex-name">High Knees</div>
+      <div class="ex-detail">1 min</div>
+    </div>
+  </div>
+
+  <div class="exercise-pill">
+    <svg class="ex-img" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="52" height="52" rx="8" fill="#1e1e28"/>
+      <circle cx="26" cy="14" r="4" fill="#ff4c29"/>
+      <line x1="26" y1="18" x2="26" y2="32" stroke="#ff4c29" stroke-width="2"/>
+      <circle cx="38" cy="22" r="5" fill="none" stroke="#ff4c29" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <line x1="26" y1="32" x2="20" y2="46" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="26" y1="32" x2="32" y2="46" stroke="#ff4c29" stroke-width="2"/>
+    </svg>
+    <div>
+      <div class="ex-name">Arm Circles</div>
+      <div class="ex-detail">30 sec each side</div>
+    </div>
+  </div>
+
+  <div class="exercise-pill">
+    <svg class="ex-img" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="52" height="52" rx="8" fill="#1e1e28"/>
+      <circle cx="26" cy="12" r="4" fill="#ff4c29"/>
+      <line x1="26" y1="16" x2="26" y2="28" stroke="#ff4c29" stroke-width="2"/>
+      <ellipse cx="26" cy="34" rx="8" ry="5" fill="none" stroke="#ff4c29" stroke-width="1.5" stroke-dasharray="3 2"/>
+      <line x1="26" y1="28" x2="20" y2="44" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="26" y1="28" x2="32" y2="44" stroke="#ff4c29" stroke-width="2"/>
+    </svg>
+    <div>
+      <div class="ex-name">Hip Rotations</div>
+      <div class="ex-detail">1 min</div>
+    </div>
+  </div>
+
+  <div class="exercise-pill">
+    <svg class="ex-img" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="52" height="52" rx="8" fill="#1e1e28"/>
+      <circle cx="26" cy="10" r="4" fill="#ff4c29"/>
+      <line x1="26" y1="14" x2="26" y2="26" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="16" y1="20" x2="36" y2="20" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="26" y1="26" x2="18" y2="38" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="26" y1="26" x2="34" y2="38" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="18" y1="38" x2="16" y2="46" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="34" y1="38" x2="36" y2="46" stroke="#ff4c29" stroke-width="2"/>
+    </svg>
+    <div>
+      <div class="ex-name">Bodyweight Squats</div>
+      <div class="ex-detail">15 reps</div>
+    </div>
+  </div>
+
+  <div class="exercise-pill">
+    <svg class="ex-img" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="52" height="52" rx="8" fill="#1e1e28"/>
+      <rect x="8" y="38" width="36" height="4" rx="2" fill="#333"/>
+      <line x1="10" y1="38" x2="26" y2="28" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="42" y1="38" x2="26" y2="28" stroke="#ff4c29" stroke-width="2"/>
+      <circle cx="26" cy="22" r="4" fill="#ff4c29"/>
+      <line x1="26" y1="26" x2="26" y2="28" stroke="#ff4c29" stroke-width="2"/>
+    </svg>
+    <div>
+      <div class="ex-name">Incline Push-Ups</div>
+      <div class="ex-detail">10 reps (easy)</div>
+    </div>
+  </div>
+
+  <div class="exercise-pill">
+    <svg class="ex-img" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="52" height="52" rx="8" fill="#1e1e28"/>
+      <rect x="10" y="8" width="32" height="4" rx="2" fill="#555"/>
+      <line x1="19" y1="12" x2="19" y2="30" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="33" y1="12" x2="33" y2="30" stroke="#ff4c29" stroke-width="2"/>
+      <circle cx="26" cy="17" r="4" fill="#ff4c29"/>
+      <line x1="19" y1="22" x2="33" y2="22" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="19" y1="30" x2="23" y2="40" stroke="#ff4c29" stroke-width="2"/>
+      <line x1="33" y1="30" x2="29" y2="40" stroke="#ff4c29" stroke-width="2"/>
+    </svg>
+    <div>
+      <div class="ex-name">Dead Hang</div>
+      <div class="ex-detail">20–30 sec (knees bent)</div>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- WEEKLY SPLIT -->
+
+  <div class="section-block">
+    <div class="section-title">🏋️ Weekly Split</div>
+
+```
+<div class="day-tabs">
+  <button class="day-tab active" data-day="1" data-color="green" onclick="switchDay(1)">Day 1 – Pull</button>
+  <button class="day-tab" data-day="2" data-color="red" onclick="switchDay(2)">Day 2 – Push</button>
+  <button class="day-tab" data-day="3" data-color="yellow" onclick="switchDay(3)">Day 3 – Core</button>
+  <button class="day-tab" data-day="4" data-color="white" onclick="switchDay(4)">Day 4 – Rest</button>
+  <button class="day-tab" data-day="5" data-color="blue" onclick="switchDay(5)">Day 5 – Upper</button>
+  <button class="day-tab" data-day="6" data-color="purple" onclick="switchDay(6)">Day 6 – Core+</button>
+  <button class="day-tab" data-day="7" data-color="gray" onclick="switchDay(7)">Day 7 – Off</button>
+</div>
+
+<!-- DAY 1 -->
+<div class="day-panel active card" id="day-1">
+  <div class="day-header">
+    <div class="day-badge" style="color:#22c55e">01</div>
+    <div class="day-info">
+      <div class="day-name" style="color:#22c55e">PULL DAY</div>
+      <div class="day-focus">Back · Biceps · Grip</div>
+    </div>
+  </div>
+  <!-- exercises -->
+  <div id="exercises-day1">
+    <!-- generated by JS -->
+  </div>
+  <div class="finisher-box">
+    <div class="finisher-label">🔥 Finisher</div>
+    <div class="finisher-text">Slow negative pull-ups — 2 sets (lower 3–5 sec, controlled)</div>
+  </div>
+</div>
+
+<!-- DAY 2 -->
+<div class="day-panel card" id="day-2">
+  <div class="day-header">
+    <div class="day-badge" style="color:#ef4444">02</div>
+    <div class="day-info">
+      <div class="day-name" style="color:#ef4444">PUSH DAY</div>
+      <div class="day-focus">Chest · Shoulders · Triceps</div>
+    </div>
+  </div>
+  <div id="exercises-day2"></div>
+  <div class="finisher-box">
+    <div class="finisher-label">🔥 Finisher</div>
+    <div class="finisher-text">Bottom hold push-up — 2 sets × max (hold 1–2 sec at lowest point)</div>
+  </div>
+</div>
+
+<!-- DAY 3 -->
+<div class="day-panel card" id="day-3">
+  <div class="day-header">
+    <div class="day-badge" style="color:#f5b800">03</div>
+    <div class="day-info">
+      <div class="day-name" style="color:#f5b800">CORE + FAT BURN</div>
+      <div class="day-focus">Abs · Conditioning</div>
+    </div>
+  </div>
+  <div id="exercises-day3"></div>
+  <div class="finisher-box">
+    <div class="finisher-label">🔥 Finisher</div>
+    <div class="finisher-text">Mountain climbers — 3 × 40 sec (no rest between)</div>
+  </div>
+</div>
+
+<!-- DAY 4 -->
+<div class="day-panel card" id="day-4">
+  <div class="day-header">
+    <div class="day-badge" style="color:#888">04</div>
+    <div class="day-info">
+      <div class="day-name" style="color:#888">ACTIVE RECOVERY</div>
+      <div class="day-focus">Light Movement · Stretching</div>
+    </div>
+  </div>
+  <div style="padding: 20px 0; font-size:14px; color: var(--muted); line-height:2;">
+    <div>🚶 Walk around / stay active</div>
+    <div>🧘 Light stretching only</div>
+    <div>❌ No intense workout</div>
+    <div>😴 Sleep 7–8 hrs tonight</div>
+  </div>
+</div>
+
+<!-- DAY 5 -->
+<div class="day-panel card" id="day-5">
+  <div class="day-header">
+    <div class="day-badge" style="color:#3b82f6">05</div>
+    <div class="day-info">
+      <div class="day-name" style="color:#3b82f6">UPPER AESTHETIC</div>
+      <div class="day-focus">Pump · Shape · Vascularity</div>
+    </div>
+  </div>
+  <div id="exercises-day5"></div>
+  <div class="finisher-box">
+    <div class="finisher-label">🔥 Vein Builder Finisher</div>
+    <div class="finisher-text">Dead hang → Dumbbell curls → Deep push-ups<br>2 rounds · NO rest between exercises</div>
+  </div>
+</div>
+
+<!-- DAY 6 -->
+<div class="day-panel card" id="day-6">
+  <div class="day-header">
+    <div class="day-badge" style="color:#a855f7">06</div>
+    <div class="day-info">
+      <div class="day-name" style="color:#a855f7">CORE + CONDITIONING</div>
+      <div class="day-focus">Intense version of Day 3</div>
+    </div>
+  </div>
+  <div id="exercises-day6"></div>
+  <div class="finisher-box" style="background:#1a1225; border-color:#2a1a3a;">
+    <div class="finisher-label" style="color:#a855f7;">⬆ PUSH HARDER</div>
+    <div class="finisher-text">Slower reps · Longer planks · Less rest between sets. This is the intensity week.</div>
+  </div>
+</div>
+
+<!-- DAY 7 -->
+<div class="day-panel card" id="day-7">
+  <div class="day-header">
+    <div class="day-badge" style="color:#444">07</div>
+    <div class="day-info">
+      <div class="day-name" style="color:#444">FULL REST</div>
+      <div class="day-focus">You earned it.</div>
+    </div>
+  </div>
+  <div style="padding: 20px 0; font-size:14px; color: var(--muted); line-height:2;">
+    <div>⛔ Zero training</div>
+    <div>💧 Stay hydrated</div>
+    <div>🍽️ Eat clean, slight deficit</div>
+    <div>😴 Prioritize sleep — this is when you grow</div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- POST WORKOUT STRETCH -->
+
+  <div class="section-block">
+    <div class="section-title">🧊 Post-Workout Stretch — 10 min daily</div>
+    <div class="stretch-grid">
+      <div class="stretch-item">
+        <svg class="s-img" viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="8" fill="#1e1e28"/><circle cx="24" cy="10" r="3.5" fill="#3b82f6"/><line x1="24" y1="13.5" x2="24" y2="28" stroke="#3b82f6" stroke-width="2"/><line x1="12" y1="20" x2="36" y2="20" stroke="#3b82f6" stroke-width="2"/><line x1="24" y1="28" x2="18" y2="40" stroke="#3b82f6" stroke-width="2"/><line x1="24" y1="28" x2="30" y2="40" stroke="#3b82f6" stroke-width="2"/></svg>
+        <div><div class="s-name">Chest Stretch</div><div class="s-time">30 sec</div></div>
+      </div>
+      <div class="stretch-item">
+        <svg class="s-img" viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="8" fill="#1e1e28"/><rect x="14" y="6" width="20" height="4" rx="2" fill="#3b82f6"/><line x1="19" y1="10" x2="19" y2="26" stroke="#3b82f6" stroke-width="2"/><line x1="29" y1="10" x2="29" y2="26" stroke="#3b82f6" stroke-width="2"/><circle cx="24" cy="16" r="3.5" fill="#3b82f6"/><line x1="19" y1="26" x2="22" y2="38" stroke="#3b82f6" stroke-width="2"/><line x1="29" y1="26" x2="26" y2="38" stroke="#3b82f6" stroke-width="2"/></svg>
+        <div><div class="s-name">Lat Stretch</div><div class="s-time">30 sec</div></div>
+      </div>
+      <div class="stretch-item">
+        <svg class="s-img" viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="8" fill="#1e1e28"/><circle cx="24" cy="8" r="3.5" fill="#3b82f6"/><line x1="24" y1="11.5" x2="24" y2="24" stroke="#3b82f6" stroke-width="2"/><line x1="14" y1="18" x2="34" y2="18" stroke="#3b82f6" stroke-width="2"/><line x1="24" y1="24" x2="18" y2="36" stroke="#3b82f6" stroke-width="2"/><line x1="18" y1="36" x2="14" y2="44" stroke="#3b82f6" stroke-width="2" stroke-dasharray="2 2"/><line x1="24" y1="24" x2="32" y2="36" stroke="#3b82f6" stroke-width="2"/></svg>
+        <div><div class="s-name">Hamstring</div><div class="s-time">30 sec</div></div>
+      </div>
+      <div class="stretch-item">
+        <svg class="s-img" viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="8" fill="#1e1e28"/><circle cx="18" cy="8" r="3.5" fill="#3b82f6"/><line x1="18" y1="11.5" x2="18" y2="24" stroke="#3b82f6" stroke-width="2"/><line x1="10" y1="18" x2="28" y2="18" stroke="#3b82f6" stroke-width="2"/><line x1="18" y1="24" x2="14" y2="36" stroke="#3b82f6" stroke-width="2"/><line x1="14" y1="36" x2="30" y2="30" stroke="#3b82f6" stroke-width="2" stroke-dasharray="2 2"/></svg>
+        <div><div class="s-name">Quad</div><div class="s-time">30 sec</div></div>
+      </div>
+      <div class="stretch-item">
+        <svg class="s-img" viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="8" fill="#1e1e28"/><circle cx="24" cy="12" r="4" fill="#3b82f6"/><line x1="24" y1="16" x2="24" y2="28" stroke="#3b82f6" stroke-width="2"/><path d="M14 20 Q10 24 14 28" stroke="#3b82f6" stroke-width="2" fill="none" stroke-linecap="round"/><line x1="24" y1="28" x2="18" y2="40" stroke="#3b82f6" stroke-width="2"/><line x1="24" y1="28" x2="30" y2="40" stroke="#3b82f6" stroke-width="2"/></svg>
+        <div><div class="s-name">Shoulder Stretch</div><div class="s-time">30 sec</div></div>
+      </div>
+      <div class="stretch-item">
+        <svg class="s-img" viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="8" fill="#1e1e28"/><circle cx="24" cy="14" r="5" fill="none" stroke="#3b82f6" stroke-width="2"/><circle cx="24" cy="14" r="2" fill="#3b82f6"/><path d="M24 9 Q32 12 30 20" stroke="#3b82f6" stroke-width="1.5" fill="none" stroke-dasharray="2 2"/><line x1="24" y1="19" x2="24" y2="32" stroke="#3b82f6" stroke-width="2"/><line x1="14" y1="24" x2="34" y2="24" stroke="#3b82f6" stroke-width="2"/><line x1="24" y1="32" x2="18" y2="44" stroke="#3b82f6" stroke-width="2"/><line x1="24" y1="32" x2="30" y2="44" stroke="#3b82f6" stroke-width="2"/></svg>
+        <div><div class="s-name">Neck Stretch</div><div class="s-time">30 sec all directions</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BONUS RULES + NUTRITION -->
+
+  <div class="two-col">
+    <div>
+      <div class="section-title">🩸 Bonus Rules</div>
+      <div class="card" style="padding:20px 24px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;">Pull-ups</div>
+        <div class="rule-item"><span class="rule-dot">→</span> Full stretch at the bottom</div>
+        <div class="rule-item"><span class="rule-dot">→</span> Chin clearly above bar</div>
+        <div class="rule-item"><span class="rule-dot">→</span> Slow controlled descent</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:#ef4444;letter-spacing:2px;margin:16px 0 10px;text-transform:uppercase;">Push-ups (Bars)</div>
+        <div class="rule-item"><span class="rule-dot">→</span> Go deep — that's your advantage</div>
+        <div class="rule-item"><span class="rule-dot">→</span> No rushing — quality reps only</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:#f5b800;letter-spacing:2px;margin:16px 0 10px;text-transform:uppercase;">Abs</div>
+        <div class="rule-item"><span class="rule-dot">→</span> Control over speed</div>
+        <div class="rule-item"><span class="rule-dot">→</span> Feel your core, not your legs</div>
+      </div>
+    </div>
+
+```
+<div>
+  <div class="section-title">🍽️ Fat Loss Rules</div>
+  <div class="card" style="padding:20px 24px;">
+    <div style="font-family:'DM Mono',monospace;font-size:11px;color:#22c55e;letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;">ABS + JAWLINE</div>
+    <div class="rule-item"><span class="rule-dot">→</span> Slight calorie deficit daily</div>
+    <div class="rule-item"><span class="rule-dot">→</span> Protein with every meal</div>
+    <div class="rule-item"><span class="rule-dot">→</span> Cut junk food & sugar</div>
+    <div class="rule-item"><span class="rule-dot">→</span> 3–4L water every day</div>
+    <div style="margin-top:20px; padding:12px; background:#0f1a0f; border-radius:8px; border:1px solid #1a3a1a;">
+      <div style="font-size:12px;color:#22c55e;margin-bottom:6px;font-weight:500;">Prep Phase (7–10 days before)</div>
+      <div style="font-size:12px;color:var(--muted);">Start at 50% intensity. Learn form, build habit, avoid soreness. Don't skip this.</div>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- TIMELINE -->
+
+  <div class="section-block">
+    <div class="section-title">⏱ Transformation Timeline</div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="t-week">Week 2</div>
+        <div class="t-result">Strength noticeably up. Reps improving.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="t-week">Week 4</div>
+        <div class="t-result">Face tighter. Slight jawline emerging.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="t-week">Week 6–8</div>
+        <div class="t-result">Abs starting to show. Body reshaping.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="t-week">Week 12</div>
+        <div class="t-result">Major transformation — if you're consistent.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDAR TRACKER -->
+
+  <div class="section-block">
+    <div class="section-title">📅 Workout Calendar</div>
+    <div class="card" style="padding:24px;">
+
+```
+  <div class="cal-top">
+    <div class="cal-nav">
+      <button onclick="changeMonth(-1)">‹</button>
+      <div class="cal-month" id="cal-month-label">APRIL 2026</div>
+      <button onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="streak-badges">
+      <div class="streak-badge fire">
+        <div class="s-num" id="streak-current">0</div>
+        <div class="s-label">🔥 Streak</div>
+      </div>
+      <div class="streak-badge total">
+        <div class="s-num" id="streak-total">0</div>
+        <div class="s-label">✅ Total</div>
+      </div>
+      <div class="streak-badge best">
+        <div class="s-num" id="streak-best">0</div>
+        <div class="s-label">🏆 Best</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cal-weekdays">
+    <div class="cal-weekday">Sun</div>
+    <div class="cal-weekday">Mon</div>
+    <div class="cal-weekday">Tue</div>
+    <div class="cal-weekday">Wed</div>
+    <div class="cal-weekday">Thu</div>
+    <div class="cal-weekday">Fri</div>
+    <div class="cal-weekday">Sat</div>
+  </div>
+
+  <div class="cal-grid" id="cal-grid"></div>
+
+  <div class="cal-legend">
+    <div class="legend-item"><div class="legend-dot done"></div> Done</div>
+    <div class="legend-item"><div class="legend-dot missed"></div> Missed / Skipped</div>
+    <div class="legend-item"><div class="legend-dot today"></div> Today</div>
+  </div>
+
+  <div class="log-btn">
+    <button class="btn-done" onclick="logToday('done')">✅ Log Today as Done</button>
+    <button class="btn-missed" onclick="logToday('missed')">❌ Mark as Missed</button>
+    <button class="btn-clear" onclick="clearToday()">↩ Clear Today</button>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- CTA -->
+
+  <div class="cta">
+    <h2>NO MORE TWEAKING.</h2>
+    <p>You've got the equipment. You've got the structure. You've got a clear goal.<br>Now it's just discipline. When Day 1 is done — you'll know.</p>
+  </div>
+
+</div>
+
+<script>
+// Exercise data
+const exercises = {
+  day1: [
+    { name: "Pull-ups", sets: "4 sets × max reps", emoji: "🔝", color: "#22c55e", note: "Chin above bar, full stretch at bottom" },
+    { name: "Chin-ups", sets: "3 sets × max reps", emoji: "💪", color: "#22c55e" },
+    { name: "Dumbbell Curls", sets: "3 × 12 reps", emoji: "🏋️", color: "#22c55e" },
+    { name: "Hammer Curls", sets: "3 × 10 reps", emoji: "🔨", color: "#22c55e" },
+    { name: "Dead Hang (bent knees)", sets: "2 × max hold", emoji: "🪝", color: "#22c55e" },
+    { name: "Hand Grip", sets: "2 × failure", emoji: "✊", color: "#22c55e" },
+  ],
+  day2: [
+    { name: "Deep Push-ups (bars)", sets: "4 × max reps", emoji: "⬇️", color: "#ef4444", note: "Go as deep as possible" },
+    { name: "Decline Push-ups", sets: "3 × 10 reps", emoji: "🛏️", color: "#ef4444", note: "Feet on bed" },
+    { name: "Pike Push-ups", sets: "3 × 8–12 reps", emoji: "🔺", color: "#ef4444" },
+    { name: "Dumbbell Shoulder Press", sets: "3 × 10 reps", emoji: "⬆️", color: "#ef4444" },
+    { name: "Tricep Dips", sets: "3 × 12 reps", emoji: "🪑", color: "#ef4444", note: "Bed or chair" },
+  ],
+  day3: [
+    { name: "Ab Wheel", sets: "4 × 8–12 reps", emoji: "⚙️", color: "#f5b800" },
+    { name: "Hanging Knee Raises", sets: "3 × 12 reps", emoji: "🦵", color: "#f5b800", note: "Knees bent, controlled" },
+    { name: "Floor Leg Raises", sets: "3 × 15 reps", emoji: "📐", color: "#f5b800" },
+    { name: "Russian Twists", sets: "3 × 20 reps", emoji: "🌀", color: "#f5b800" },
+    { name: "Plank", sets: "3 × max hold", emoji: "🧱", color: "#f5b800" },
+  ],
+  day5: [
+    { name: "Pull-ups", sets: "3 sets × max reps", emoji: "🔝", color: "#3b82f6" },
+    { name: "Deep Push-ups (bars)", sets: "3 sets × max reps", emoji: "⬇️", color: "#3b82f6" },
+    { name: "Dumbbell Curls", sets: "3 × 12 reps", emoji: "💪", color: "#3b82f6" },
+    { name: "Lateral Raises", sets: "3 × 12 reps", emoji: "↔️", color: "#3b82f6" },
+    { name: "Ab Wheel", sets: "3 × 10 reps", emoji: "⚙️", color: "#3b82f6" },
+  ],
+  day6: [
+    { name: "Ab Wheel", sets: "4 × 8–12 reps SLOWER", emoji: "⚙️", color: "#a855f7" },
+    { name: "Hanging Knee Raises", sets: "3 × 12 reps SLOWER", emoji: "🦵", color: "#a855f7" },
+    { name: "Floor Leg Raises", sets: "3 × 15 reps", emoji: "📐", color: "#a855f7" },
+    { name: "Russian Twists", sets: "3 × 20 reps", emoji: "🌀", color: "#a855f7" },
+    { name: "Plank", sets: "3 × LONGER hold", emoji: "🧱", color: "#a855f7" },
+  ]
+};
+
+// Exercise SVG icons based on exercise type
+function getSVG(name, color) {
+  const c = color;
+  const bg = '#1e1e28';
+  const svgMap = {
+    'pull': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><rect x="8" y="10" width="44" height="4" rx="2" fill="#444"/><line x1="22" y1="14" x2="22" y2="34" stroke="${c}" stroke-width="2.5"/><line x1="38" y1="14" x2="38" y2="34" stroke="${c}" stroke-width="2.5"/><circle cx="30" cy="20" r="5" fill="${c}"/><line x1="22" y1="26" x2="38" y2="26" stroke="${c}" stroke-width="2"/><line x1="22" y1="34" x2="26" y2="46" stroke="${c}" stroke-width="2.5"/><line x1="38" y1="34" x2="34" y2="46" stroke="${c}" stroke-width="2.5"/></svg>`,
+    'curl': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><circle cx="30" cy="12" r="5" fill="${c}"/><line x1="30" y1="17" x2="30" y2="30" stroke="${c}" stroke-width="2.5"/><path d="M30 30 Q20 35 22 44" stroke="${c}" stroke-width="2.5" fill="none" stroke-linecap="round"/><rect x="16" y="42" width="12" height="5" rx="2.5" fill="${c}"/><line x1="30" y1="24" x2="20" y2="24" stroke="${c}" stroke-width="2"/></svg>`,
+    'hang': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><rect x="8" y="8" width="44" height="4" rx="2" fill="#444"/><line x1="24" y1="12" x2="24" y2="26" stroke="${c}" stroke-width="2.5"/><line x1="36" y1="12" x2="36" y2="26" stroke="${c}" stroke-width="2.5"/><circle cx="30" cy="22" r="5" fill="${c}"/><line x1="24" y1="27" x2="36" y2="27" stroke="${c}" stroke-width="2"/><path d="M24 34 Q24 44 30 44 Q36 44 36 34" stroke="${c}" stroke-width="2.5" fill="none"/></svg>`,
+    'push': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><rect x="10" y="44" width="40" height="4" rx="2" fill="#444"/><line x1="16" y1="44" x2="26" y2="32" stroke="${c}" stroke-width="2.5"/><line x1="44" y1="44" x2="34" y2="32" stroke="${c}" stroke-width="2.5"/><line x1="26" y1="32" x2="34" y2="32" stroke="${c}" stroke-width="2.5"/><circle cx="30" cy="26" r="5" fill="${c}"/><line x1="30" y1="21" x2="30" y2="18" stroke="${c}" stroke-width="2"/></svg>`,
+    'pike': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><rect x="8" y="48" width="44" height="4" rx="2" fill="#444"/><circle cx="30" cy="14" r="5" fill="${c}"/><line x1="30" y1="19" x2="30" y2="34" stroke="${c}" stroke-width="2.5"/><line x1="14" y1="48" x2="30" y2="34" stroke="${c}" stroke-width="2.5"/><line x1="46" y1="48" x2="30" y2="34" stroke="${c}" stroke-width="2.5"/></svg>`,
+    'shoulder': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><circle cx="30" cy="18" r="5" fill="${c}"/><line x1="30" y1="23" x2="30" y2="36" stroke="${c}" stroke-width="2.5"/><line x1="16" y1="30" x2="44" y2="30" stroke="${c}" stroke-width="2.5"/><rect x="12" y="26" width="6" height="10" rx="3" fill="${c}" opacity="0.6"/><rect x="42" y="26" width="6" height="10" rx="3" fill="${c}" opacity="0.6"/><line x1="30" y1="36" x2="24" y2="50" stroke="${c}" stroke-width="2.5"/><line x1="30" y1="36" x2="36" y2="50" stroke="${c}" stroke-width="2.5"/></svg>`,
+    'dip': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><rect x="8" y="44" width="20" height="4" rx="2" fill="#555"/><rect x="32" y="44" width="20" height="4" rx="2" fill="#555"/><line x1="15" y1="44" x2="15" y2="32" stroke="#555" stroke-width="2"/><line x1="45" y1="44" x2="45" y2="32" stroke="#555" stroke-width="2"/><circle cx="30" cy="22" r="5" fill="${c}"/><line x1="30" y1="27" x2="30" y2="36" stroke="${c}" stroke-width="2.5"/><line x1="15" y1="36" x2="45" y2="36" stroke="${c}" stroke-width="2.5"/></svg>`,
+    'abwheel': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><circle cx="30" cy="30" r="14" fill="none" stroke="${c}" stroke-width="3"/><circle cx="30" cy="30" r="5" fill="${c}"/><line x1="8" y1="30" x2="52" y2="30" stroke="${c}" stroke-width="2.5"/><line x1="30" y1="16" x2="30" y2="16" stroke="${c}" stroke-width="2"/></svg>`,
+    'kneeraise': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><rect x="8" y="8" width="44" height="4" rx="2" fill="#444"/><line x1="24" y1="12" x2="24" y2="26" stroke="${c}" stroke-width="2.5"/><line x1="36" y1="12" x2="36" y2="26" stroke="${c}" stroke-width="2.5"/><circle cx="30" cy="22" r="5" fill="${c}"/><line x1="24" y1="27" x2="36" y2="27" stroke="${c}" stroke-width="2"/><path d="M30 34 Q24 38 22 46" stroke="${c}" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M22 46 Q30 50 34 44" stroke="${c}" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
+    'legraise': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><rect x="6" y="44" width="48" height="4" rx="2" fill="#333"/><circle cx="16" cy="32" r="5" fill="${c}"/><line x1="16" y1="37" x2="16" y2="44" stroke="${c}" stroke-width="2.5"/><line x1="16" y1="27" x2="16" y2="20" stroke="${c}" stroke-width="2.5"/><path d="M16 32 L44 20" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+    'twist': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><circle cx="30" cy="18" r="5" fill="${c}"/><line x1="30" y1="23" x2="30" y2="34" stroke="${c}" stroke-width="2.5"/><path d="M30 28 Q42 32 44 40" stroke="${c}" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M30 28 Q18 24 16 32" stroke="${c}" stroke-width="2.5" fill="none" stroke-dasharray="3 2" stroke-linecap="round"/><line x1="30" y1="34" x2="24" y2="48" stroke="${c}" stroke-width="2.5"/><line x1="30" y1="34" x2="36" y2="48" stroke="${c}" stroke-width="2.5"/></svg>`,
+    'plank': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><rect x="8" y="44" width="44" height="4" rx="2" fill="#333"/><line x1="14" y1="44" x2="22" y2="34" stroke="${c}" stroke-width="2.5"/><line x1="46" y1="44" x2="46" y2="34" stroke="${c}" stroke-width="2.5"/><line x1="22" y1="34" x2="46" y2="34" stroke="${c}" stroke-width="2.5"/><circle cx="52" cy="30" r="5" fill="${c}"/></svg>`,
+    'lateral': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><circle cx="30" cy="16" r="5" fill="${c}"/><line x1="30" y1="21" x2="30" y2="34" stroke="${c}" stroke-width="2.5"/><line x1="10" y1="30" x2="24" y2="34" stroke="${c}" stroke-width="2.5"/><line x1="50" y1="30" x2="36" y2="34" stroke="${c}" stroke-width="2.5"/><circle cx="8" cy="30" r="3" fill="${c}" opacity="0.7"/><circle cx="52" cy="30" r="3" fill="${c}" opacity="0.7"/><line x1="30" y1="34" x2="24" y2="48" stroke="${c}" stroke-width="2.5"/><line x1="30" y1="34" x2="36" y2="48" stroke="${c}" stroke-width="2.5"/></svg>`,
+    'grip': `<svg viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="8" fill="${bg}"/><rect x="22" y="24" width="16" height="24" rx="4" fill="none" stroke="${c}" stroke-width="2.5"/><rect x="26" y="16" width="8" height="12" rx="4" fill="${c}"/><line x1="22" y1="30" x2="16" y2="28" stroke="${c}" stroke-width="2"/><line x1="22" y1="35" x2="14" y2="35" stroke="${c}" stroke-width="2"/><line x1="22" y1="40" x2="16" y2="42" stroke="${c}" stroke-width="2"/><line x1="38" y1="30" x2="44" y2="28" stroke="${c}" stroke-width="2"/><line x1="38" y1="35" x2="46" y2="35" stroke="${c}" stroke-width="2"/><line x1="38" y1="40" x2="44" y2="42" stroke="${c}" stroke-width="2"/></svg>`,
+  };
+
+  const n = name.toLowerCase();
+  if (n.includes('pull-up') || n.includes('pull up') || n.includes('chin')) return svgMap['pull'];
+  if (n.includes('curl')) return svgMap['curl'];
+  if (n.includes('hang')) return svgMap['hang'];
+  if (n.includes('push') && n.includes('pike')) return svgMap['pike'];
+  if (n.includes('push')) return svgMap['push'];
+  if (n.includes('shoulder press')) return svgMap['shoulder'];
+  if (n.includes('dip')) return svgMap['dip'];
+  if (n.includes('ab wheel')) return svgMap['abwheel'];
+  if (n.includes('knee raise') || n.includes('knee raises')) return svgMap['kneeraise'];
+  if (n.includes('leg raise')) return svgMap['legraise'];
+  if (n.includes('twist')) return svgMap['twist'];
+  if (n.includes('plank')) return svgMap['plank'];
+  if (n.includes('lateral')) return svgMap['lateral'];
+  if (n.includes('grip')) return svgMap['grip'];
+  return svgMap['pull'];
+}
+
+function renderExercises(dayKey, containerId) {
+  const list = exercises[dayKey];
+  if (!list) return;
+  const container = document.getElementById(containerId);
+  container.innerHTML = list.map((ex, i) => `
+    <div class="exercise-row">
+      ${getSVG(ex.name, ex.color)}
+      <div class="row-info">
+        <div class="row-name">${ex.name}</div>
+        <div class="row-sets">${ex.sets}${ex.note ? ' · <span style="color:#666">' + ex.note + '</span>' : ''}</div>
+      </div>
+      <div class="check-box" onclick="toggleCheck(this)" title="Mark done">✓</div>
+    </div>
+  `).join('');
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  if (el.classList.contains('checked')) {
+    el.innerHTML = '✓';
+    el.style.color = 'white';
+  } else {
+    el.innerHTML = '✓';
+    el.style.color = '';
+  }
+}
+
+function switchDay(dayNum) {
+  document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+  const tab = document.querySelector(`[data-day="${dayNum}"]`);
+  const panel = document.getElementById(`day-${dayNum}`);
+  if (tab) tab.classList.add('active');
+  if (panel) panel.classList.add('active');
+}
+
+// =====================
+// CALENDAR + PERSISTENCE
+// =====================
+
+const STORAGE_KEY = 'mts_workout_log_v1';
+
+function getLog() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+}
+
+function saveLog(log) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(log));
+}
+
+function dateKey(y, m, d) {
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function todayKey() {
+  const n = new Date();
+  return dateKey(n.getFullYear(), n.getMonth(), n.getDate());
+}
+
+let calYear, calMonth;
+
+function initCal() {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  renderCal();
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  renderCal();
+}
+
+function renderCal() {
+  const monthNames = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE',
+                      'JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+  document.getElementById('cal-month-label').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+  const log = getLog();
+  const now = new Date();
+  const todayStr = todayKey();
+  const grid = document.getElementById('cal-grid');
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+  let html = '';
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) {
+    html += `<div class="cal-day cal-empty"></div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const key = dateKey(calYear, calMonth, d);
+    const isToday = key === todayStr;
+    const isFuture = new Date(calYear, calMonth, d) > now && !isToday;
+    const status = log[key]; // 'done' | 'missed' | undefined
+
+    let cls = 'cal-day';
+    if (isFuture) cls += ' cal-future';
+    else if (status === 'done') cls += ' done';
+    else if (status === 'missed') cls += ' missed';
+    if (isToday) cls += ' cal-today';
+
+    const icon = status === 'done' ? '✓' : status === 'missed' ? '✗' : '';
+    const onclick = isFuture ? '' : `onclick="cycleDay('${key}')"`;
+
+    html += `<div class="${cls}" ${onclick}>
+      <span class="day-num">${d}</span>
+      ${icon ? `<span class="day-icon">${icon}</span>` : ''}
+    </div>`;
+  }
+
+  grid.innerHTML = html;
+  updateStreaks();
+}
+
+function cycleDay(key) {
+  const log = getLog();
+  const now = new Date();
+  const todayStr = todayKey();
+  // Only allow toggling past + today
+  const [y, m, d] = key.split('-').map(Number);
+  if (new Date(y, m-1, d) > now) return;
+
+  const cur = log[key];
+  if (!cur) log[key] = 'done';
+  else if (cur === 'done') log[key] = 'missed';
+  else delete log[key];
+
+  saveLog(log);
+  renderCal();
+}
+
+function logToday(status) {
+  const log = getLog();
+  log[todayKey()] = status;
+  saveLog(log);
+  renderCal();
+}
+
+function clearToday() {
+  const log = getLog();
+  delete log[todayKey()];
+  saveLog(log);
+  renderCal();
+}
+
+function updateStreaks() {
+  const log = getLog();
+  const now = new Date();
+
+  // Total done
+  const totalDone = Object.values(log).filter(v => v === 'done').length;
+
+  // Current streak — count back from today
+  let streak = 0;
+  let check = new Date(now);
+  while (true) {
+    const k = dateKey(check.getFullYear(), check.getMonth(), check.getDate());
+    if (log[k] === 'done') {
+      streak++;
+      check.setDate(check.getDate() - 1);
+    } else break;
+  }
+
+  // Best streak ever — scan all dates in log sorted
+  const doneDates = Object.entries(log)
+    .filter(([,v]) => v === 'done')
+    .map(([k]) => k)
+    .sort();
+
+  let best = 0, run = 0, prevDate = null;
+  for (const ds of doneDates) {
+    const cur = new Date(ds);
+    if (prevDate) {
+      const diff = (cur - prevDate) / 86400000;
+      if (diff === 1) { run++; }
+      else { run = 1; }
+    } else { run = 1; }
+    if (run > best) best = run;
+    prevDate = cur;
+  }
+  if (streak > best) best = streak;
+
+  document.getElementById('streak-current').textContent = streak;
+  document.getElementById('streak-total').textContent = totalDone;
+  document.getElementById('streak-best').textContent = best;
+}
+
+// Init calendar on load
+initCal();
+
+// Render all exercise lists
+renderExercises('day1', 'exercises-day1');
+renderExercises('day2', 'exercises-day2');
+renderExercises('day3', 'exercises-day3');
+renderExercises('day5', 'exercises-day5');
+renderExercises('day6', 'exercises-day6');
+</script>
+
+</body>
+</html>
